@@ -161,6 +161,15 @@ func (m *Manager) Register() {
 	}
 }
 
+// RegisterByName can be removed when user input wasm files can be loaded and registered.
+func (m *Manager) RegisterByName(name string) {
+	for _, mod := range m.modules {
+		if mod.name == name {
+			mod.Register()
+		}
+	}
+}
+
 func (m *Manager) Close(ctx context.Context) error {
 	return m.cache.Close(ctx)
 }
@@ -537,6 +546,9 @@ func updateResults(gotResults, results types.Results) {
 							// Override vulnerability details
 							v.SeveritySource = got.SeveritySource
 							v.Vulnerability = got.Vulnerability
+							v.Custom = got.Custom
+							// Contexts, this can be removed when Custom map[string]interface{} is useful.
+							v.Contexts = got.Contexts
 						}
 					}
 					return v

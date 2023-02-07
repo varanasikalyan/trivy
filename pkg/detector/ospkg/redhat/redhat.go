@@ -153,6 +153,8 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		}
 
 		vulnID := adv.VulnerabilityID
+		customAdvisory := make(map[string]interface{})
+		customAdvisory["advisory"] = adv.Custom
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  vulnID,
 			PkgID:            pkg.ID,
@@ -164,7 +166,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: adv.Severity.String(),
 			},
-			Custom: adv.Custom,
+			Custom: customAdvisory,
 		}
 
 		// unpatched vulnerabilities

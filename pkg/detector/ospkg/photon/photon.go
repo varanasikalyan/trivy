@@ -75,6 +75,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
+			customAdvisory := make(map[string]interface{})
+			customAdvisory["advisory"] = adv.Custom
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
@@ -82,7 +84,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				InstalledVersion: installed,
 				Ref:              pkg.Ref,
 				Layer:            pkg.Layer,
-				Custom:           adv.Custom,
+				Custom:           customAdvisory,
 				DataSource:       adv.DataSource,
 			}
 			if installedVersion.LessThan(fixedVersion) {

@@ -96,7 +96,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				log.Logger.Debugf("failed to parse Amazon Linux package version: %s", err)
 				continue
 			}
-
+			customAdvisory := make(map[string]interface{})
+			customAdvisory["advisory"] = adv.Custom
 			if installedVersion.LessThan(fixedVersion) {
 				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
@@ -106,7 +107,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					FixedVersion:     adv.FixedVersion,
 					Ref:              pkg.Ref,
 					Layer:            pkg.Layer,
-					Custom:           adv.Custom,
+					Custom:           customAdvisory,
 					DataSource:       adv.DataSource,
 				}
 				vulns = append(vulns, vuln)

@@ -74,6 +74,8 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 			if !s.isVulnerable(installedVersion, adv) {
 				continue
 			}
+			customAdvisory := make(map[string]interface{})
+			customAdvisory["advisory"] = adv.Custom
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
@@ -82,7 +84,7 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
 				Ref:              pkg.Ref,
-				Custom:           adv.Custom,
+				Custom:           customAdvisory,
 				DataSource:       adv.DataSource,
 			})
 		}

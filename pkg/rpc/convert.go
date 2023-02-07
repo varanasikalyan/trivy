@@ -363,6 +363,8 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = &t
 		}
 
+		customAdvisory := make(map[string]interface{})
+		customAdvisory["advisory"] = vuln.CustomAdvisoryData.AsInterface()
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -386,7 +388,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData.AsInterface(),
+			Custom:         customAdvisory,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
