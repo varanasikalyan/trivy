@@ -79,7 +79,7 @@ func Test_GetDockerOption(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("TRIVY_USERNAME", tt.userEnv)
 			t.Setenv("TRIVY_PASSWORD", tt.passEnv)
-			got, err := GetDockerOption(false, tt.platform)
+			got, err := GetDockerOption(false, tt.platform, false)
 			if err != nil {
 				assert.Equal(t, err.Error(), tt.expectedErr.Error())
 			} else {

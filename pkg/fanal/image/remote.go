@@ -47,13 +47,22 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	}
 
 	if option.Platform != "" {
-		s, err := parsePlatform(ref, option.Platform, remoteOpts)
-		if err != nil {
-			return nil, xerrors.Errorf("platform error: %w", err)
-		}
-		// Don't pass platform when the specified image is single-arch.
-		if s != nil {
-			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+		if option.ForcePlatform {
+			s, err := forcePlatform(ref, option.Platform, remoteOpts)
+			if err != nil {
+				return nil, xerrors.Errorf("platform error: %w", err)
+			}
+			if s != nil {
+				remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+			}
+		} else {
+			s, err := parsePlatform(ref, option.Platform, remoteOpts)
+			if err != nil {
+				return nil, xerrors.Errorf("platform error: %w", err)
+			}
+			if s != nil {
+				remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+			}
 		}
 	}
 
@@ -75,6 +84,62 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		descriptor: desc,
 	}, nil
 
+}
+
+func forcePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
+	// OS wildcard, implicitly pick up the first os found in the image list.
+	// e.g. */amd64
+	d, err := remote.Get(ref, options...)
+	if err != nil {
+		return nil, xerrors.Errorf("image get error: %w", err)
+	}
+	if strings.HasPrefix(p, "*/") {
+		index, err := d.ImageIndex()
+		if err != nil {
+			return nil, xerrors.Errorf("image index error: %w", err)
+		}
+
+		m, err := index.IndexManifest()
+		if err != nil {
+			return nil, xerrors.Errorf("remote index manifest error: %w", err)
+		}
+		if len(m.Manifests) == 0 {
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+			return nil, nil
+		}
+		var foundPlatform bool
+		for _, manifest := range m.Manifests {
+			if manifest.Platform.Architecture == strings.TrimPrefix(p, "*") {
+				foundPlatform = true
+				// Replace with the detected OS
+				// e.g. */amd64 => linux/amd64
+				p = manifest.Platform.OS + strings.TrimPrefix(p, "*")
+			}
+		}
+		if !foundPlatform {
+			return nil, xerrors.New("image does not support the requested platform")
+		}
+	}
+	// Image is not a multi-arch image, but we can extract the OS from the image's config file.
+	img, err := d.Image()
+	if err != nil {
+		return nil, xerrors.Errorf("remote index error: %w", err)
+	}
+	cfg, err := img.ConfigFile()
+	request := strings.Split(p, "/")
+	if len(request) == 2 {
+		if cfg.OS != request[0] || cfg.Architecture != request[1] {
+			return nil, xerrors.New("image does not support the requested platform")
+		}
+		if err != nil || cfg.OS != "" {
+			return nil, xerrors.Errorf("remote image config error: %w", err)
+		}
+	}
+	platform, err := v1.ParsePlatform(p)
+	if err != nil {
+		return nil, xerrors.Errorf("platform parse error: %w", err)
+	}
+	return platform, nil
 }
 
 func parsePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {

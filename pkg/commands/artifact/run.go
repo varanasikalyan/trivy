@@ -632,6 +632,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			Platform:          opts.Platform,
+			ForcePlatform:     opts.ForcePlatform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
 
