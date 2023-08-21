@@ -1,6 +1,7 @@
 package image
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
@@ -17,11 +18,29 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("** Manifest: %s\n", desc.MediaType)
+	if desc.MediaType == "application/vnd.oci.image.index.v1+json" || desc.MediaType == "application/vnd.docker.distribution.manifest.list.v2+json" {
+		fmt.Printf("** List Manifest\n")
+		imageManifest, err := v1.ParseIndexManifest(bytes.NewReader(desc.Manifest))
+		if err != nil {
+			return nil, err
+		}
+		for _, val := range imageManifest.Manifests {
+			fmt.Printf("** Arch: %s, OS: %s, Variant: %s\n", val.Platform.Architecture, val.Platform.OS, val.Platform.Variant)
+		}
+	} else if desc.MediaType == "application/vnd.oci.image.manifest.v1+json" || desc.MediaType == "application/vnd.docker.distribution.manifest.v2+json" {
+		fmt.Printf("** Schema2 Manifest\n")
+		fmt.Printf("** Arch: %s, OS: %s, Variant: %s\n", desc.Platform.Architecture, desc.Platform.OS, desc.Platform.Variant)
+	} else {
+		fmt.Printf("** Schema1 Manifest or Unexpected media type for Image()\n")
+	}
+	if err != nil {
+		return nil, err
+	}
 	img, err := desc.Image()
 	if err != nil {
 		return nil, err
 	}
-
 	// Return v1.Image if the image is found in Docker Registry
 	return remoteImage{
 		name:       imageName,
