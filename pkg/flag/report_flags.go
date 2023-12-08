@@ -284,7 +284,6 @@ func splitSeverity(severity []string) []dbTypes.Severity {
 	for _, s := range severity {
 		sev, err := dbTypes.NewSeverity(strings.ToUpper(s))
 		if err != nil {
-			log.Logger.Warnf("unknown severity option: %s", err)
 			continue
 		}
 		severities = append(severities, sev)

@@ -77,8 +77,8 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			}
 		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
-		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+		//log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		//log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}

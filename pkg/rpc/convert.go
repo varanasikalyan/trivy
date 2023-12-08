@@ -50,7 +50,7 @@ func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.Cu
 	for _, r := range resources {
 		data, err := structpb.NewValue(r.Data)
 		if err != nil {
-			log.Logger.Warn(err)
+			//log.Logger.Warn(err)
 		}
 		rpcResources = append(rpcResources, &common.CustomResource{
 			Type:     r.Type,
@@ -145,7 +145,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	for _, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			//log.Logger.Warn(err)
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
@@ -212,7 +212,7 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 	for _, m := range misconfs {
 		severity, err := dbTypes.NewSeverity(m.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			//log.Logger.Warn(err)
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{

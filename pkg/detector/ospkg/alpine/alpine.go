@@ -84,7 +84,6 @@ func NewScanner(opts ...option) *Scanner {
 
 // Detect vulnerabilities in package using Alpine scanner
 func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
