@@ -42,8 +42,11 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	if opts.DownloadDBOnly {
 		return nil
 	}
-
-	if err = db.Init(opts.CacheDir); err != nil {
+	boltOptions := db.BoltOptions{
+		Enable:   true,
+		ReadOnly: true,
+	}
+	if err = db.Init(opts.CacheDir, boltOptions); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 

@@ -130,8 +130,11 @@ func Test_dbWorker_update(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cacheDir := t.TempDir()
-
-			require.NoError(t, db.Init(cacheDir), tt.name)
+			boltOptions := db.BoltOptions{
+				Enable:   true,
+				ReadOnly: true,
+			}
+			require.NoError(t, db.Init(cacheDir, boltOptions), tt.name)
 
 			mockDBClient := new(dbFile.MockOperation)
 			mockDBClient.On("NeedsUpdate",

@@ -30,7 +30,11 @@ func InitDB(t *testing.T, fixtureFiles []string) string {
 	require.NoError(t, loader.Close())
 
 	// Initialize DB
-	require.NoError(t, db.Init(dir))
+	boltOptions := db.BoltOptions{
+		Enable:   true,
+		ReadOnly: true,
+	}
+	require.NoError(t, db.Init(dir, boltOptions))
 
 	return dir
 }

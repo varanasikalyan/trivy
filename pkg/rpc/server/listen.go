@@ -174,7 +174,11 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 
 	log.Logger.Info("Reopening DB...")
-	if err = db.Init(cacheDir); err != nil {
+	boltOptions := db.BoltOptions{
+		Enable:   true,
+		ReadOnly: true,
+	}
+	if err = db.Init(cacheDir, boltOptions); err != nil {
 		return xerrors.Errorf("failed to open DB: %w", err)
 	}
 

@@ -308,8 +308,11 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	if opts.DownloadDBOnly {
 		return SkipScan
 	}
-
-	if err := db.Init(opts.CacheDir); err != nil {
+	boltOptions := db.BoltOptions{
+		Enable:   true,
+		ReadOnly: true,
+	}
+	if err := db.Init(opts.CacheDir, boltOptions); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
