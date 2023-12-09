@@ -2,6 +2,9 @@ module github.com/aquasecurity/trivy
 
 go 1.19
 
+replace (
+	github.com/aquasecurity/trivy-db => github.com/varanasikalyan/trivy-db v0.0.0-20231209073720-d4d4649df329
+)
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.6.0
